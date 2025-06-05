@@ -19,6 +19,7 @@ export default function TodoList() {
 
   const todoList = useTodoStore((state) => state.todoList);
   const actionFetchTodoList = useTodoStore((state) => state.actionFetchTodoList);
+  const markTodoList = useTodoStore((state)=> state.markTodoList);
 
   const [inputError, setInputError] = useState(initialInput);
   const [input, setInput] = useState(initialInput);
@@ -29,7 +30,7 @@ export default function TodoList() {
     actionFetchTodoList(token);
   }, []);
 
-  const hdlDelete = async (todoId) => {
+  const hdlDelete = async (e,todoId) => {
     try {
       setIsLoadingDel(true);
       await todoListApi.deleteTodoList(todoId, token);
@@ -56,10 +57,10 @@ export default function TodoList() {
       try {
         schemaTooList.validateSync(input, {abortEarly: false});
 
-        console.log('todoId', todoId);
-        console.log('input TodoList', input);
+        // console.log('todoId', todoId);
+        // console.log('input TodoList', input);
         setIsLoading(true);
-        await todoListApi.updateTodoList(input, token);
+        await todoListApi.createTodoList(input, token);
         await actionFetchTodoList(token);
 
         toast.success("Add todo list success!!");
@@ -84,21 +85,32 @@ export default function TodoList() {
     console.log(todoList);
   }
 
+  const hdlChecked =async (e,input) =>{
+// console.log(input);
+// console.log(input.taskName);
+// console.log(input.id);
+// console.log(input.completed);
+const body = {taskName: input.taskName, completed: e.target.checked}
+// console.log(body);
+    await markTodoList(body,input.id,token)
+    actionFetchTodoList(token);
+  }
+
   return (
     <div className='flex justify-center items-center'>
       <div>
         <h1>My Todo</h1>
 
         <div className='flex flex-row justify-between items-center'>
-          <input type="text" placeholder="Type here" className={`input ${inputError.taskName ? "outline-1 outline-red-500" : "outline-0"}`} onChange={hdlChange} onKeyDown={hdlKeyDownSave} />
+          <input id="taskName" type="text" placeholder="Type here" className={`input ${inputError.taskName ? "outline-1 outline-red-500" : "outline-0"}`} onChange={hdlChange} onKeyDown={hdlKeyDownSave} />
           <button type="submit" className="btn" onClick={hdlClickCheckTodo}>Check</button>
         </div>
         {inputError.taskName &&<p className="text-red-500 text-xs">{inputError.taskName}</p>}
 
         <div>
 
-          {todoList.map((el)=>{
-            return <TodoCard key={el.id} props={el} />
+          {todoList.map((el,i)=>{
+            return <TodoCard key={el.id} props={el} hdlChecked={hdlChecked} hdlDelete={hdlDelete} index={i} />
           })}
           {/* fetch data map to do card */}
           {/* <TodoCard /> */}

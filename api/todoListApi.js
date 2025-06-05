@@ -18,8 +18,8 @@ todoListApi.getAllTodoListByToken = (token) =>{
 return axios.get(`${BASEURL}/V2/todos`,{headers: {Authorization: `Bearer ${token}`}})
 }
 
-todoListApi.deleteTodoList = (input,todoId,token)=>{
-  return axios.delete(`${BASEURL}/V2/todos/${todoId}`,input,{headers: {Authorization: `Bearer ${token}`}})
+todoListApi.deleteTodoList = (todoId,token)=>{
+  return axios.delete(`${BASEURL}/V2/todos/${todoId}`,{headers: {Authorization: `Bearer ${token}`}})
 }
 
 todoListApi.updateTodoList = (input,todoId,token)=>{
